@@ -1,0 +1,57 @@
+version: '3'
+services:
+    nginx:
+        image: nginx:latest
+        container_name: nginx
+        restart: always
+        ports: 
+            - 80:80
+            - 443:443
+        volumes:
+            - ./html:/usr/share/nginx/html 
+            - ./conf/nginx/conf.d:/etc/nginx/conf.d
+            - ./logs/nginx:/var/log/nginx
+    php:
+        image: php-fpm
+        build: ./build
+        container_name: php-fpm
+        restart: always
+        ports: 
+            - 9000:9000
+        environment:
+            LANG: C.UTF-8
+        volumes:
+            - ./html:/var/www/html
+            - ./logs/php-fpm:/var/log/php-fpm
+            - ./conf/php-fpm/php.ini:/usr/local/etc/php/php.ini
+            - ./conf/php-fpm/php-fpm.conf:/usr/local/etc/php-fpm.conf
+    mysql:
+        image: mysql:latest
+        container_name: mysql
+        restart: always
+        volumes:
+            - ./data/mysql:/var/lib/mysql
+            - ./logs/mysql:/var/lib/mysql-logs
+            - ./conf/mysql:/etc/mysql/conf.d
+        environment:
+            MYSQL_ROOT_PASSWORD: alex
+            TZ: Asia/Shanghai
+            LANG: C.UTF-8
+            command: "--character-set-server=utf8"
+        ports:
+            - 3306:3306
+    redis:
+        image: redis:latest
+        container_name: redis
+        restart: always
+        volumes:
+            - ./data/redis:/data
+            - ./conf/redis:/usr/local/etc/redis
+        command: 
+            /bin/bash -c "redis-server /usr/local/etc/redis/redis.conf"
+        ports:
+            - 6379:6379
+networks:
+    default:
+        name: mynet
+        external: true
