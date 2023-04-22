@@ -10,6 +10,7 @@ RUN apt-get update && \
         apt-get install -y git \
         libfreetype6-dev libwebp-dev libjpeg-dev libpng-dev \
         zip \
+        unzip \
         wget
 
 RUN pecl install -o -f redis 
